@@ -30,6 +30,9 @@
     "postinstall": "simple-git-hooks",
     "typecheck": "tsc --noEmit"
   },
+  "dependencies": {
+    "axios": "^1.8.4"
+  },
   "devDependencies": {
     "@antfu/eslint-config": "^2.27.0",
     "@arco-design/web-vue": "^2.57.0",

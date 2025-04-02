@@ -1,4 +1,12 @@
-import type { AuthorMetadata, MovieMetadata } from '../../index'
+import { type AuthorMetadata, type MovieMetadata, message } from '../../index'
+import { get } from '~/api/baseApi'
+
+async function test() {
+  await get('http://10.10.1.23:9523/api/oauth/secret').then((res) => {
+    // eslint-disable-next-line no-console
+    console.log('res', res)
+  })
+}
 
 // 导出javbus域名处理器
 export default {
@@ -49,6 +57,9 @@ export default {
   // 获取数据函数
   getMovieMetadata: async () => {
     try {
+      message.info('AMMDS Extension API 请求')
+      await test()
+
       // 示例返回的数据
       const data: MovieMetadata = {
         uniqueid: 'AMMDS',

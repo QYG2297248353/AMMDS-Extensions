@@ -1,5 +1,15 @@
 <template>
-  <a class="icon-btn mx-2 text-2xl" rel="noreferrer" href="https://github.com/antfu/vitesse-webext" target="_blank" title="GitHub">
-    <pixelarticons-power />
+  <a
+    class="icon-btn mx-2 text-2xl"
+    rel="noreferrer"
+    href="https://ammds.lifebus.top/"
+    target="_blank"
+    title="AMMDS"
+  >
+    <img
+      src="https://file.lifebus.top/ammds/icon.svg"
+      alt="power"
+      class="block text-white text-lg h-10 w-10 object-contain"
+    >
   </a>
 </template>

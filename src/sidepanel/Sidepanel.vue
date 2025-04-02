@@ -1,22 +1,40 @@
 <script setup lang="ts">
-import { storageDemo } from '~/logic/storage'
-
-function openOptionsPage() {
-  browser.runtime.openOptionsPage()
-}
+import Domain from '~/domain/Domain.vue'
 </script>
 
 <template>
-  <main class="w-full px-4 py-5 text-center text-gray-700">
-    <Logo />
-    <div>Sidepanel</div>
-    <SharedSubtitle />
+  <main class="sidepanel-container">
+    <!-- 内部页面由匹配页面提供 -->
+    <div class="content-area">
+      <Domain />
+    </div>
 
-    <button class="btn mt-2" @click="openOptionsPage">
-      Open Options 2
-    </button>
-    <div class="mt-2">
-      <span class="opacity-50">Storage:</span> {{ storageDemo }}
+    <!-- 底部信息 -->
+    <div class="footer-container">
+      <Footer />
     </div>
   </main>
 </template>
+
+<style lang="less" scoped>
+.sidepanel-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  position: relative;
+}
+
+.content-area {
+  flex: 1;
+  overflow-y: auto;
+  width: 100%;
+}
+
+.footer-container {
+  width: 100%;
+  background-color: #f8f8f8;
+}
+</style>

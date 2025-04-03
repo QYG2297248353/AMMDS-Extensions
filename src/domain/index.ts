@@ -26,6 +26,8 @@ export interface AuthorMetadata {
 export interface MovieMetadata {
   // 番号 (唯一标识、识别码)
   uniqueid: string
+  // 其他番号
+  numbers?: string[]
   // 影视源标题
   originalTitle: string
   // 影视中文标题

@@ -1,11 +1,14 @@
 import { useWebExtensionStorage } from '~/composables/useWebExtensionStorage'
 import type { StateExtension } from '~/domain'
+import type { Client } from '~/api/fetchApi'
 
-export const storageDemo = useWebExtensionStorage('webext-demo', 'Storage Demo')
-
+// 快捷按钮状态
 export const stateExtension = useWebExtensionStorage('ammds-state', {
   enbled: false,
   url: '',
   isFavorited: false,
   isSubscribed: false,
 } as StateExtension)
+
+// 后台客户端存储
+export const clients = useWebExtensionStorage('ammds-clients', [] as Client[])

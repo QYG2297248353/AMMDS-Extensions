@@ -6,5 +6,11 @@ declare module 'webext-bridge' {
     // see https://github.com/antfu/webext-bridge#type-safe-protocols
     'tab-prev': { title: string | undefined }
     'get-current-tab': ProtocolWithReturn<{ tabId: number }, { title?: string }>
+    'fetch-api': ProtocolWithReturn<{
+      url: string
+      method?: 'GET' | 'POST' | 'PUT' | 'DELETE'
+      headers?: Record<string, string>
+      body?: Record<string, any> | string
+    }, { success: boolean, data?: any, error?: string }>
   }
 }

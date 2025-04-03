@@ -8,7 +8,6 @@ export default {
       // 域名匹配列表
       const domainList: string[] = [
         'avdanyuwiki.com',
-        'baidu.com',
       ]
       // 正则表达式匹配列表
       const regexList: RegExp[] = [
@@ -83,6 +82,10 @@ export default {
       name: 'AMMDS',
       email: 'ammds@lifebus.top',
       github: 'https://github.com/QYG2297248353/AMMDS-Extensions',
+      description: 'AMMDS Official Extension',
+      website: 'https://ammds.lifebus.top',
+      telegram: 'https://t.me/+OgCuWhS93zczZjhl',
+      twitter: 'https://x.com/MS2297248353',
     }
     return authorInfo
   },

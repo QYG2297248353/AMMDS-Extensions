@@ -63,3 +63,58 @@ onMessage('get-current-tab', async () => {
     }
   }
 })
+
+interface FetchRequest {
+  url: string
+  method?: 'GET' | 'POST' | 'PUT' | 'DELETE'
+  headers?: Record<string, string>
+  body?: Record<string, any> | string
+}
+
+onMessage('fetch-api', async (message) => {
+  const data = message.data as FetchRequest | null
+  if (!data || !data.url) {
+    return { success: false, error: 'Invalid request data' }
+  }
+
+  try {
+    const options: RequestInit = {
+      method: data.method || 'GET',
+      headers: data.headers || {},
+    }
+
+    // 根据请求方法设置 body
+    if (['POST', 'PUT', 'DELETE'].includes(options.method as string) && data.body) {
+      if (data.headers && data.headers['Content-Type'] === 'application/x-www-form-urlencoded') {
+        options.body = new URLSearchParams(data.body as Record<string, string>).toString()
+      }
+      else if (data.headers && data.headers['Content-Type'] === 'multipart/form-data') {
+        const formData = new FormData()
+        Object.entries(data.body as Record<string, any>).forEach(([key, value]) => {
+          formData.append(key, value)
+        })
+        options.body = formData
+        delete (options.headers as Record<string, string>)['Content-Type']
+      }
+      else {
+        options.headers = { ...options.headers, 'Content-Type': 'application/json' }
+        options.body = JSON.stringify(data.body)
+      }
+    }
+
+    const response = await fetch(data.url, options)
+    const contentType = response.headers.get('content-type')
+    let responseData
+    if (contentType && contentType.includes('application/json')) {
+      responseData = await response.json()
+    }
+    else {
+      responseData = await response.text()
+    }
+
+    return { success: true, data: responseData }
+  }
+  catch (error) {
+    return { success: false, error: (error as Error).message }
+  }
+})

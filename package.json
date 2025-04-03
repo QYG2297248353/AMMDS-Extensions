@@ -1,10 +1,10 @@
 {
   "name": "ammds-extension",
-  "displayName": "Ammds 助手",
+  "displayName": "AMMDS 助手",
   "version": "1.0.0",
   "private": true,
   "packageManager": "pnpm@9.7.1",
-  "description": "Ammds 个人影视数据管理平台",
+  "description": "AMMDS 个人影视数据管理平台",
   "scripts": {
     "dev": "npm run clear && cross-env NODE_ENV=development run-p dev:*",
     "dev-firefox": "npm run clear && cross-env NODE_ENV=development EXTENSION=firefox run-p dev:*",

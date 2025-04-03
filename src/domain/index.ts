@@ -1,3 +1,4 @@
+/* eslint-disable unused-imports/no-unused-vars */
 import { message } from './message'
 import { stateExtension } from '~/logic/storage'
 
@@ -13,8 +14,12 @@ export interface AuthorMetadata {
   avatar?: string
   // 邮箱 (可选)
   email?: string
-  // 社交链接 (可选, blog, twitter, 其他)
+  // 社交链接 (可选, 个人主页)
   website?: string
+  // 社交链接 (可选, Telegram)
+  telegram?: string
+  // 社交链接 (可选, Twitter)
+  twitter?: string
 }
 
 // 影视元数据类型

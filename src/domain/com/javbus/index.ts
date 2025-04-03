@@ -1,12 +1,4 @@
-import { type AuthorMetadata, type MovieMetadata, message } from '../../index'
-import { get } from '~/api/baseApi'
-
-async function test() {
-  await get('http://10.10.1.23:9523/api/oauth/secret').then((res) => {
-    // eslint-disable-next-line no-console
-    console.log('res', res)
-  })
-}
+import type { AuthorMetadata, MovieMetadata } from '../../index'
 
 // 导出javbus域名处理器
 export default {
@@ -57,9 +49,6 @@ export default {
   // 获取数据函数
   getMovieMetadata: async () => {
     try {
-      message.info('AMMDS Extension API 请求')
-      await test()
-
       // 示例返回的数据
       const data: MovieMetadata = {
         uniqueid: 'AMMDS',
@@ -88,15 +77,22 @@ export default {
       throw error
     }
   },
+
+  // 插件作者信息
   author: () => {
-    // 插件作者信息
     const authorInfo: AuthorMetadata = {
       name: 'AMMDS',
       email: 'ammds@lifebus.top',
       github: 'https://github.com/QYG2297248353/AMMDS-Extensions',
+      description: 'AMMDS Official Extension',
+      website: 'https://ammds.lifebus.top',
+      telegram: 'https://t.me/+OgCuWhS93zczZjhl',
+      twitter: 'https://x.com/MS2297248353',
     }
     return authorInfo
   },
+
+  // 获取视图组件
   getView: async () => {
     const component = await import('./view/index.vue')
     return component.default

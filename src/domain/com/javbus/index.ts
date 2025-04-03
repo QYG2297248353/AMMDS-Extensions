@@ -8,7 +8,6 @@ export default {
       // 域名匹配列表
       const domainList: string[] = [
         'javbus.com',
-        'github.com',
       ]
       // 正则表达式匹配列表
       const regexList: RegExp[] = [

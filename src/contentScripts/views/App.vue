@@ -309,7 +309,7 @@ function stopDrag(e: MouseEvent) {
   >
     <!-- 主按钮 - 移除点击事件，由 stopDrag 处理 -->
     <button
-      class="main-btn flex w-12 h-12 rounded-full shadow-xl cursor-move border-none ammds-btn"
+      class="main-btn flex w-16 h-16 rounded-full shadow-xl cursor-move border-none ammds-btn"
       bg="gradient-to-br from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900"
       style="display: flex; justify-content: center; align-items: center"
       @click.stop
@@ -327,7 +327,7 @@ function stopDrag(e: MouseEvent) {
     >
       <!-- 自动化 -->
       <button
-        class="flex w-12 h-12 rounded-full shadow-lg cursor-pointer border-none ammds-btn ammds-tip"
+        class="flex w-16 h-16 rounded-full shadow-lg cursor-pointer border-none ammds-btn ammds-tip"
         :class="{ 'tip-right': isLeft, 'tip-left': !isLeft }"
         bg="gradient-to-br from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800"
         style="display: flex; justify-content: center; align-items: center"
@@ -346,7 +346,7 @@ function stopDrag(e: MouseEvent) {
 
       <!-- 导入 -->
       <button
-        class="flex w-12 h-12 rounded-full shadow-lg cursor-pointer border-none ammds-btn ammds-tip"
+        class="flex w-16 h-16 rounded-full shadow-lg cursor-pointer border-none ammds-btn ammds-tip"
         :class="{ 'tip-right': isLeft, 'tip-left': !isLeft }"
         bg="gradient-to-br from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800"
         style="display: flex; justify-content: center; align-items: center"
@@ -365,7 +365,7 @@ function stopDrag(e: MouseEvent) {
 
       <!-- 收藏 -->
       <button
-        class="flex w-12 h-12 rounded-full shadow-lg cursor-pointer border-none ammds-btn ammds-tip"
+        class="flex w-16 h-16 rounded-full shadow-lg cursor-pointer border-none ammds-btn ammds-tip"
         :class="{ 'tip-right': isLeft, 'tip-left': !isLeft }"
         bg="gradient-to-br from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800"
         style="display: flex; justify-content: center; align-items: center"
@@ -384,7 +384,7 @@ function stopDrag(e: MouseEvent) {
 
       <!-- 订阅 -->
       <button
-        class="flex w-12 h-12 rounded-full shadow-lg cursor-pointer border-none ammds-btn ammds-tip"
+        class="flex w-16 h-16 rounded-full shadow-lg cursor-pointer border-none ammds-btn ammds-tip"
         :class="{ 'tip-right': isLeft, 'tip-left': !isLeft }"
         bg="gradient-to-br from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800"
         style="display: flex; justify-content: center; align-items: center"

@@ -3,7 +3,7 @@ import { onMessage } from 'webext-bridge/content-script'
 import { createApp } from 'vue'
 import App from './views/App.vue'
 import { setupApp } from '~/logic/common-setup'
-import { getState, registerAllDomainHandlers } from '~/domain'
+import { registerAllDomainHandlers } from '~/domain'
 
 // 页面注入
 

@@ -260,22 +260,26 @@ export function extractMagnets(document: Document): Array<{ name: string, url: s
     const name = nameElement?.textContent?.trim() || linkElement.textContent?.trim() || '未命名'
 
     // 提取大小信息
-    const sizeElement = row.querySelector('a[href^="magnet:"] + *')
     let size = 0
-    if (sizeElement && sizeElement.textContent) {
-      const sizeText = sizeElement.textContent.trim()
-      const sizeMatch = sizeText.match(/(\d+(\.\d+)?)(\s*)(GB|MB|KB)/i)
-      if (sizeMatch) {
-        const value = Number.parseFloat(sizeMatch[1])
-        const unit = sizeMatch[4].toUpperCase()
+    const sizeElementAll = row.querySelectorAll('a[href^="magnet:"]')
+    // 3个
+    if (sizeElementAll.length === 3) {
+      const sizeElement = sizeElementAll[1]
+      if (sizeElement && sizeElement.textContent) {
+        const sizeText = sizeElement.textContent.trim()
+        const sizeMatch = sizeText.match(/(\d+(\.\d+)?)(\s*)(GB|MB|KB)/i)
+        if (sizeMatch) {
+          const value = Number.parseFloat(sizeMatch[1])
+          const unit = sizeMatch[4].toUpperCase()
 
-        // 转换为字节
-        if (unit === 'KB')
-          size = value * 1024
-        else if (unit === 'MB')
-          size = value * 1024 * 1024
-        else if (unit === 'GB')
-          size = value * 1024 * 1024 * 1024
+          // 转换为字节
+          if (unit === 'KB')
+            size = value * 1024
+          else if (unit === 'MB')
+            size = value * 1024 * 1024
+          else if (unit === 'GB')
+            size = value * 1024 * 1024 * 1024
+        }
       }
     }
 

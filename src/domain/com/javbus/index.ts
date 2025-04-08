@@ -1,5 +1,6 @@
 /* eslint-disable regexp/no-super-linear-backtracking */
 import { extractDescription, extractKeywords, extractMagnets, extractMovieInfo, extractRelatedMovies, extractTitleInfo } from './utils/javbus-parser'
+import { message } from '~/domain/message'
 import type { AuthorMetadata, MovieMetadata } from '~/domain/types'
 
 /**
@@ -9,12 +10,12 @@ import type { AuthorMetadata, MovieMetadata } from '~/domain/types'
  */
 export function isMatchElement(): boolean {
   try {
-    // 检查是否存在电影信息容器
+    // 1. 检查是否存在电影信息容器
     const movieContainer = document.querySelector('div.movie')
     if (!movieContainer)
       return false
 
-    // 检查是否存在识别码
+    // 2. 检查是否存在识别码
     const headerElements = document.querySelectorAll('span.header')
     let hasIdElement = false
     for (const el of Array.from(headerElements)) {
@@ -26,7 +27,7 @@ export function isMatchElement(): boolean {
     if (!hasIdElement)
       return false
 
-    // 检查是否存在标题
+    // 3. 检查是否存在标题
     const titleElement = document.querySelector('title')
     if (!titleElement || !titleElement.textContent)
       return false
@@ -37,6 +38,7 @@ export function isMatchElement(): boolean {
     const standardMatch = titleText.match(/([A-Z0-9]+-[A-Z0-9]+)\s+(.+?)\s+-\s+JavBus/)
     // 2. 数字格式：032225_001 PtoMセックス 藤野りん - JavBus
     const numberMatch = titleText.match(/(\d+_\d+)\s+(.+?)\s+-\s+JavBus/)
+    // 其他格式自行添加
 
     if (!standardMatch && !numberMatch)
       return false
@@ -91,8 +93,10 @@ export async function getDataFromPage(): Promise<MovieMetadata | null> {
 
     // 提取标题信息
     const titleInfo = extractTitleInfo(document)
-    if (!titleInfo)
+    if (!titleInfo) {
+      message.warning('标题提取失败')
       return null
+    }
 
     // 提取电影详细信息
     const movieInfo = extractMovieInfo(document)
@@ -112,7 +116,7 @@ export async function getDataFromPage(): Promise<MovieMetadata | null> {
     // 提取磁力链接
     const magnets = extractMagnets(document)
     if (magnets.length > 0) {
-      movieInfo.magnets = magnets.map(magnet => magnet.url)
+      movieInfo.magnets = magnets
     }
 
     // 提取相关影片/剧照
@@ -147,7 +151,14 @@ export default {
   matchDomain: (url: string): boolean => {
     try {
       // 域名匹配列表
-      const domainList: string[] = ['javbus.com', '1.ink', 'github.com']
+      const domainList: string[] = [
+        'javbus.com',
+        'cdnbus.ink',
+        'fanbus.ink',
+        'dmmsee.help',
+        '1.ink',
+        'github.com',
+      ]
       // 正则表达式匹配列表
       const regexList: RegExp[] = [
         /^https?:\/\/(?:www\.)?javbus\.com\/\w+\/?$/,
@@ -190,6 +201,7 @@ export default {
       // 检查当前页面中是否有匹配的元素
       if (!isMatchElement()) {
         console.warn('[AMMDS Extension] No matching element found on the page')
+        message.warning('元数据匹配失败')
         throw new Error('No matching element found on the page')
       }
 

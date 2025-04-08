@@ -32,10 +32,10 @@ export function isMatchElement(): boolean {
       return false
 
     // 支持更多格式的标题匹配
-    // 1. 标准格式：ZMAR-132 まるっと！新井リマ - JavBus
-    // 2. 数字格式：032225_001 PtoMセックス 藤野りん - JavBus
     const titleText = titleElement.textContent
+    // 1. 标准格式：ZMAR-132 まるっと！新井リマ - JavBus
     const standardMatch = titleText.match(/([A-Z0-9]+-[A-Z0-9]+)\s+(.+?)\s+-\s+JavBus/)
+    // 2. 数字格式：032225_001 PtoMセックス 藤野りん - JavBus
     const numberMatch = titleText.match(/(\d+_\d+)\s+(.+?)\s+-\s+JavBus/)
 
     if (!standardMatch && !numberMatch)
@@ -147,7 +147,7 @@ export default {
   matchDomain: (url: string): boolean => {
     try {
       // 域名匹配列表
-      const domainList: string[] = ['javbus.com']
+      const domainList: string[] = ['javbus.com', '1.ink', 'github.com']
       // 正则表达式匹配列表
       const regexList: RegExp[] = [
         /^https?:\/\/(?:www\.)?javbus\.com\/\w+\/?$/,

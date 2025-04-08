@@ -56,9 +56,9 @@ const position = ref({ x: 0, y: 0 })
 const isDragging = ref(false)
 const startPos = ref({ x: 0, y: 0 })
 
-// 修改：更精确地计算按钮组高度和容器尺寸
-const BUTTON_HEIGHT = 48 // 单个按钮高度
-const BUTTON_WIDTH = 48 // 单个按钮宽度
+// 精确地计算按钮组高度和容器尺寸
+const BUTTON_HEIGHT = 54 // 单个按钮高度
+const BUTTON_WIDTH = 54 // 单个按钮宽度
 const BUTTON_GAP = 10 // 按钮间距
 const TOTAL_BUTTONS = 4 // 总按钮数
 const EXPANDED_HEIGHT
@@ -112,21 +112,11 @@ function adjustPosition() {
 
   // 计算展开后的总高度
   const totalHeight = isTop.value
-    ? BUTTON_HEIGHT
-    : BUTTON_HEIGHT + EXPANDED_HEIGHT
+    ? BUTTON_HEIGHT + EXPANDED_HEIGHT
+    : BUTTON_HEIGHT
 
   // 垂直方向调整
   if (isTop.value) {
-    // 向上展开时，确保不超出顶部边界
-    if (position.value.y - EXPANDED_HEIGHT < SAFE_MARGIN) {
-      position.value.y = EXPANDED_HEIGHT + SAFE_MARGIN
-    }
-    // 同时确保不超出底部边界
-    if (position.value.y + BUTTON_HEIGHT > windowHeight - SAFE_MARGIN) {
-      position.value.y = windowHeight - BUTTON_HEIGHT - SAFE_MARGIN
-    }
-  }
-  else {
     // 向下展开时，确保不超出底部边界
     if (position.value.y + totalHeight > windowHeight - SAFE_MARGIN) {
       position.value.y = windowHeight - totalHeight - SAFE_MARGIN
@@ -138,7 +128,7 @@ function adjustPosition() {
   }
 }
 
-// 修改toggleState函数，优化展开/收起逻辑
+// 展开/收起逻辑
 function toggleState() {
   stateExtension.value.url = window.location.href
 
@@ -307,9 +297,9 @@ function stopDrag(e: MouseEvent) {
     class="flex flex-col gap-[10px] items-end font-sans select-none leading-[1em]"
     @mousedown="startDrag"
   >
-    <!-- 主按钮 - 移除点击事件，由 stopDrag 处理 -->
+    <!-- 主按钮 -->
     <button
-      class="main-btn flex w-16 h-16 rounded-full shadow-xl cursor-move border-none ammds-btn"
+      class="main-btn flex w-14 h-14 rounded-full shadow-xl cursor-move border-none ammds-btn"
       bg="gradient-to-br from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900"
       style="display: flex; justify-content: center; align-items: center"
       @click.stop
@@ -320,14 +310,14 @@ function stopDrag(e: MouseEvent) {
         class="main-btn-img block text-white text-lg h-6 w-6 object-contain relative z-10"
       >
     </button>
+    <!-- 按钮组 -->
     <div
       v-show="show"
       class="flex flex-col gap-[10px]"
-      :class="[{ 'flex-col-reverse': isTop }]"
     >
       <!-- 自动化 -->
       <button
-        class="flex w-16 h-16 rounded-full shadow-lg cursor-pointer border-none ammds-btn ammds-tip"
+        class="flex w-14 h-14 rounded-full shadow-lg cursor-pointer border-none ammds-btn ammds-tip"
         :class="{ 'tip-right': isLeft, 'tip-left': !isLeft }"
         bg="gradient-to-br from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800"
         style="display: flex; justify-content: center; align-items: center"
@@ -346,7 +336,7 @@ function stopDrag(e: MouseEvent) {
 
       <!-- 导入 -->
       <button
-        class="flex w-16 h-16 rounded-full shadow-lg cursor-pointer border-none ammds-btn ammds-tip"
+        class="flex w-14 h-14 rounded-full shadow-lg cursor-pointer border-none ammds-btn ammds-tip"
         :class="{ 'tip-right': isLeft, 'tip-left': !isLeft }"
         bg="gradient-to-br from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800"
         style="display: flex; justify-content: center; align-items: center"
@@ -365,7 +355,7 @@ function stopDrag(e: MouseEvent) {
 
       <!-- 收藏 -->
       <button
-        class="flex w-16 h-16 rounded-full shadow-lg cursor-pointer border-none ammds-btn ammds-tip"
+        class="flex w-14 h-14 rounded-full shadow-lg cursor-pointer border-none ammds-btn ammds-tip"
         :class="{ 'tip-right': isLeft, 'tip-left': !isLeft }"
         bg="gradient-to-br from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800"
         style="display: flex; justify-content: center; align-items: center"
@@ -384,7 +374,7 @@ function stopDrag(e: MouseEvent) {
 
       <!-- 订阅 -->
       <button
-        class="flex w-16 h-16 rounded-full shadow-lg cursor-pointer border-none ammds-btn ammds-tip"
+        class="flex w-14 h-14 rounded-full shadow-lg cursor-pointer border-none ammds-btn ammds-tip"
         :class="{ 'tip-right': isLeft, 'tip-left': !isLeft }"
         bg="gradient-to-br from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800"
         style="display: flex; justify-content: center; align-items: center"

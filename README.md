@@ -57,7 +57,7 @@ npm dev
 
 ```ts
 // 导入AMMDS的类型
-import type { AuthorMetadata, MovieMetadata } from '../../index'
+import type { AuthorMetadata, MovieMetadata } from '~/domain/types'
 
 // 导出javbus域名处理器
 export default {

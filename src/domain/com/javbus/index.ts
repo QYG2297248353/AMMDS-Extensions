@@ -1,6 +1,6 @@
 /* eslint-disable regexp/no-super-linear-backtracking */
-import type { AuthorMetadata, MovieMetadata } from '../../index'
 import { extractDescription, extractKeywords, extractMagnets, extractMovieInfo, extractRelatedMovies, extractTitleInfo } from './utils/javbus-parser'
+import type { AuthorMetadata, MovieMetadata } from '~/domain/types'
 
 /**
  * 当前页面是否存在匹配的元素

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import type { AuthorMetadata } from './index'
+import type { AuthorMetadata } from './types'
 import { findMatchingHandler } from './index'
 import { stateExtension } from '~/logic/storage'
 

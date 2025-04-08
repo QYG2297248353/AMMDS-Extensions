@@ -347,7 +347,7 @@ function stopDrag(e: MouseEvent) {
         :class="{ 'tip-right': isLeft, 'tip-left': !isLeft }"
         bg="gradient-to-br from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800"
         style="display: flex; justify-content: center; align-items: center"
-        aria-label="自动化"
+        aria-label="自动"
         @click="onAutoClick"
       >
         <div
@@ -423,16 +423,35 @@ function stopDrag(e: MouseEvent) {
 <style lang="less" scoped>
 .ammds-btn {
   position: relative;
-  transition: all 0.3s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(4px);
+    0 2px 4px -1px rgba(0, 0, 0, 0.06),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(8px);
+  background-image: linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 0.15) 25%,
+    transparent 25%,
+    transparent 50%,
+    rgba(255, 255, 255, 0.15) 50%,
+    rgba(255, 255, 255, 0.15) 75%,
+    transparent 75%
+  );
+  background-size: 100px 100px;
 
   &:hover {
-    transform: scale(1.1);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2),
-      0 4px 6px -2px rgba(0, 0, 0, 0.1);
+    transform: scale(1.05) translateY(-2px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2),
+      0 10px 10px -5px rgba(0, 0, 0, 0.1),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+
+  &:active {
+    transform: scale(0.98);
+    box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1),
+      inset 0 1px 2px rgba(0, 0, 0, 0.1);
   }
 }
 
@@ -440,21 +459,26 @@ function stopDrag(e: MouseEvent) {
   position: relative;
 }
 
-/* 左侧提示 - 简化为箭头指向按钮的样式 */
+/* 左侧提示 - 增强视觉效果 */
 .tip-left:hover::before {
   content: attr(aria-label);
   position: absolute;
   top: 50%;
   left: -7em;
   transform: translateY(-50%);
-  padding: 0.5em 1em;
-  background: rgba(0, 0, 0, 0.8);
+  padding: 0.6em 1.2em;
+  background: rgba(0, 0, 0, 0.85);
   color: white;
-  border-radius: 4px;
+  border-radius: 6px;
   font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
   white-space: nowrap;
   z-index: 20;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .tip-left:hover::after {
@@ -463,27 +487,32 @@ function stopDrag(e: MouseEvent) {
   top: 50%;
   left: -1.8em;
   transform: translateY(-50%);
-  border-left: 6px solid rgba(0, 0, 0, 0.8);
+  border-left: 6px solid rgba(0, 0, 0, 0.85);
   border-top: 6px solid transparent;
   border-bottom: 6px solid transparent;
   z-index: 20;
 }
 
-/* 右侧提示 - 简化为箭头指向按钮的样式 */
+/* 右侧提示 - 增强视觉效果 */
 .tip-right:hover::before {
   content: attr(aria-label);
   position: absolute;
   top: 50%;
   right: -7em;
   transform: translateY(-50%);
-  padding: 0.5em 1em;
-  background: rgba(0, 0, 0, 0.8);
+  padding: 0.6em 1.2em;
+  background: rgba(0, 0, 0, 0.85);
   color: white;
-  border-radius: 4px;
+  border-radius: 6px;
   font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
   white-space: nowrap;
   z-index: 20;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .tip-right:hover::after {
@@ -492,7 +521,7 @@ function stopDrag(e: MouseEvent) {
   top: 50%;
   right: -1.8em;
   transform: translateY(-50%);
-  border-right: 6px solid rgba(0, 0, 0, 0.8);
+  border-right: 6px solid rgba(0, 0, 0, 0.85);
   border-top: 6px solid transparent;
   border-bottom: 6px solid transparent;
   z-index: 20;
@@ -501,9 +530,20 @@ function stopDrag(e: MouseEvent) {
 .main-btn {
   z-index: 10;
   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2),
-    0 10px 10px -5px rgba(0, 0, 0, 0.1);
+    0 10px 10px -5px rgba(0, 0, 0, 0.1),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.2);
   position: relative;
   overflow: hidden;
+  background-image: linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 0.15) 25%,
+    transparent 25%,
+    transparent 50%,
+    rgba(255, 255, 255, 0.15) 50%,
+    rgba(255, 255, 255, 0.15) 75%,
+    transparent 75%
+  );
+  background-size: 100px 100px;
 
   &::after {
     content: "";
@@ -513,16 +553,24 @@ function stopDrag(e: MouseEvent) {
     width: 100%;
     height: 100%;
     background: radial-gradient(
-      circle,
-      rgba(255, 255, 255, 0.2) 0%,
+      circle at center,
+      rgba(255, 255, 255, 0.3) 0%,
+      rgba(255, 255, 255, 0.1) 30%,
       rgba(255, 255, 255, 0) 70%
     );
     opacity: 0;
-    transition: opacity 0.3s;
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   &:hover::after {
     opacity: 1;
+  }
+
+  &:active {
+    transform: scale(0.98);
+    box-shadow: 0 5px 15px -3px rgba(0, 0, 0, 0.15),
+      0 4px 6px -2px rgba(0, 0, 0, 0.05),
+      inset 0 1px 2px rgba(0, 0, 0, 0.1);
   }
 }
 </style>

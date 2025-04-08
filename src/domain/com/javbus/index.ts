@@ -1,5 +1,5 @@
 /* eslint-disable regexp/no-super-linear-backtracking */
-import { extractDescription, extractKeywords, extractMagnets, extractMovieInfo, extractRelatedMovies, extractTitleInfo } from './utils/javbus-parser'
+import { extractDescription, extractExtraFanart, extractKeywords, extractMagnets, extractMovieInfo, extractRelatedMovies, extractTitleInfo } from './utils/javbus-parser'
 import { message } from '~/domain/message'
 import type { AuthorMetadata, MovieMetadata } from '~/domain/types'
 
@@ -119,10 +119,16 @@ export async function getDataFromPage(): Promise<MovieMetadata | null> {
       movieInfo.magnets = magnets
     }
 
-    // 提取相关影片/剧照
+    // 提取相关影片
     const relatedMovies = extractRelatedMovies(document)
     if (relatedMovies.length > 0) {
       movieInfo.relatedMovies = relatedMovies.map(movie => movie.url)
+    }
+
+    // 提取剧照
+    const coverImages = extractExtraFanart(document)
+    if (coverImages.length > 0) {
+      movieInfo.extrafanart = coverImages
     }
 
     // 构建完整的电影元数据

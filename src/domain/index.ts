@@ -1,6 +1,7 @@
 /* eslint-disable unused-imports/no-unused-vars */
 import { message } from './message'
 import type { AuthorMetadata, MovieMetadata } from './types'
+import { importMovie } from '~/api/ammds'
 import { stateExtension } from '~/logic/storage'
 
 // 定义域名处理器接口
@@ -10,7 +11,7 @@ export interface DomainHandler {
   // 定义域名匹配函数
   matchDomain: (url: string) => boolean
   // 定义获取数据函数
-  getMovieMetadata: () => MovieMetadata
+  getMovieMetadata: () => Promise<MovieMetadata>
   // 自动化操作
   automate: (callback: (data: MovieMetadata) => Promise<void>) => void
   // 获取视图组件
@@ -90,9 +91,14 @@ export async function handleFavorite(url: string): Promise<void> {
   }
 
   try {
-    const data = handler.getMovieMetadata()
+    const data = await handler.getMovieMetadata()
     stateExtension.value.isFavorited = !stateExtension.value.isFavorited
-    // 这里可以添加数据持久化逻辑
+    data.favorite = true
+    await importMovie(data).then(() => {
+      message.success('导入并收藏成功')
+    }).catch((error) => {
+      message.error(error)
+    })
   }
   catch (error) {
     console.error('[AMMDS Extension] Error handling favorite:', error)
@@ -109,9 +115,14 @@ export async function handleSubscribe(url: string): Promise<void> {
   }
 
   try {
-    const data = handler.getMovieMetadata()
+    const data = await handler.getMovieMetadata()
     stateExtension.value.isSubscribed = !stateExtension.value.isSubscribed
-    // 这里可以添加数据持久化逻辑
+    data.subscribe = true
+    await importMovie(data).then(() => {
+      message.success('导入并订阅成功')
+    }).catch((error) => {
+      message.error(error)
+    })
   }
   catch (error) {
     console.error('[AMMDS Extension] Error handling subscribe:', error)
@@ -128,8 +139,16 @@ export async function handleImport(url: string): Promise<void> {
   }
 
   try {
-    const data = handler.getMovieMetadata()
-    // 这里可以添加导入相关的逻辑
+    const data = await handler.getMovieMetadata()
+    // eslint-disable-next-line no-console
+    console.log('请求数据', data)
+    await importMovie(data).then((res) => {
+      // eslint-disable-next-line no-console
+      console.log('导入数据', res)
+      message.success('导入成功')
+    }).catch((error) => {
+      message.error(error)
+    })
   }
   catch (error) {
     console.error('[AMMDS Extension] Error handling import:', error)

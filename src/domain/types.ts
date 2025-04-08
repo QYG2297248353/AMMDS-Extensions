@@ -110,4 +110,9 @@ export interface MovieMetadata {
     // 磁链哈希 (便于去重)
     hash?: string
   }[]
+
+  // 扩展字段 (可选)
+  subscribe?: boolean
+  favorite?: boolean
+  [key: string]: any
 }

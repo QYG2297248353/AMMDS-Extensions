@@ -10,6 +10,13 @@ export interface Client {
   secret: string
   // 启用
   enbled: boolean
+  // 默认
+  preferred: boolean
+
+  // 状态
+  status?: boolean
+  // 其他属性...
+  [key: string]: any
 }
 
 // 获取客户端列表
@@ -29,7 +36,7 @@ export function getClientList(): Client[] {
 export function getDefaultClient(): Client | undefined {
   try {
     const clientList: Client[] = clients.value
-    const enabledClientList = clientList.filter(client => client.enbled)
+    const enabledClientList = clientList.filter(client => client.enbled && client.preferred)
     if (enabledClientList.length === 0)
       return undefined
     return enabledClientList[0]
@@ -48,7 +55,7 @@ export function getDefaultClient(): Client | undefined {
  * @param secret 密钥
  * @param enbled 启用 || true
  */
-export function addClient(name: string = 'AMMDS', url: string, secret: string, enbled: boolean = true) {
+export function addClient(name: string = 'AMMDS', url: string, secret: string, enbled: boolean = true, preferred: boolean = false) {
   try {
     const clientList: Client[] = clients.value
     const newClient: Client = {
@@ -56,12 +63,65 @@ export function addClient(name: string = 'AMMDS', url: string, secret: string, e
       url,
       secret,
       enbled,
+      preferred,
     }
     clientList.push(newClient)
     clients.value = clientList
   }
   catch (error) {
     console.error('[AMMDS Extension] Error adding client:', error)
+    throw error
+  }
+}
+
+/**
+ * 删除客户端
+ *
+ * @param url 地址 || http(s)://host:port
+ */
+export function deleteClient(url: string) {
+  try {
+    const clientList: Client[] = clients.value
+    const updatedClientList = clientList.filter(client => client.url !== url)
+    clients.value = updatedClientList
+  }
+  catch (error) {
+    console.error('[AMMDS Extension] Error deleting client:', error)
+    throw error
+  }
+}
+
+/**
+ * 设为默认客户端
+ * @param url 地址 || http(s)://host:port
+ */
+export function setDefaultClient(url: string) {
+  try {
+    const clientList: Client[] = clients.value
+    clientList.forEach((client) => {
+      client.preferred = client.url === url
+    })
+    clients.value = clientList
+  }
+  catch (error) {
+    console.error('[AMMDS Extension] Error setting default client:', error)
+    throw error
+  }
+}
+
+/**
+ * 获取指定客户端
+ * @param url 地址 || http(s)://host:port
+ * @returns Client
+ */
+export function getClient(url: string): Client | undefined {
+  try {
+    const clientList: Client[] = clients.value
+    const client = clientList.find(client => client.url === url)
+    return client
+  }
+  catch (error) {
+    console.error('[AMMDS Extension] Error getting client:', error)
     throw error
   }
 }
@@ -105,7 +165,7 @@ export class RequestHelper {
     method: string,
     endpoint: string,
     data?: any,
-        config: RequestConfig = {},
+    config: RequestConfig = {},
   ): Promise<T> {
     const {
       retryTimes = 0,
@@ -113,8 +173,13 @@ export class RequestHelper {
     } = config
 
     // 检查是否初始化
-    if (endpoint.startsWith('/') && !this.baseUrl)
-      throw new Error('[AMMDS Extension] 请先初始化客户端')
+    if (endpoint.startsWith('/') && !this.baseUrl) {
+      const client = getDefaultClient()
+      if (client)
+        this.init(client)
+      else
+        throw new Error('[AMMDS Extension] 请添加默认客户端')
+    }
 
     const url = endpoint.startsWith('http') ? endpoint : `${this.baseUrl}${endpoint}`
     const headers: Record<string, string> = {

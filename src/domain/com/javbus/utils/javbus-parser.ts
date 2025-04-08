@@ -99,11 +99,17 @@ export function extractMovieInfo(document: Document): Record<string, string | st
     if (!headerText)
       return
 
-    // 获取下一个兄弟元素的文本内容
-    const getNextElementText = (el: Element): string | undefined => {
-      const nextEl = el.nextElementSibling
-      return nextEl?.textContent?.trim()
+    // 获取父元素的文本内容
+    const getParentElementText = (el: Element): string | undefined => {
+      const parentEl = el.parentElement
+      return parentEl?.textContent?.trim()
     }
+
+    // 获取下一个兄弟元素的文本内容
+    // const getNextElementText = (el: Element): string | undefined => {
+    //   const nextEl = el.nextElementSibling
+    //   return nextEl?.textContent?.trim()
+    // }
 
     // 获取下一个兄弟元素中的链接元素
     const getNextElementLink = (el: Element): Element | null => {
@@ -119,12 +125,15 @@ export function extractMovieInfo(document: Document): Record<string, string | st
       }
     }
     else if (headerText.includes('發行日期')) {
-      const text = getNextElementText(header)
-      if (text)
-        result.premiered = text
+      const text = getParentElementText(header)
+      if (text) {
+        const dateMatch = text.match(/(\d{4}-\d{2}-\d{2})/)
+        if (dateMatch)
+          result.premiered = dateMatch[1]
+      }
     }
     else if (headerText.includes('長度')) {
-      const text = getNextElementText(header)
+      const text = getParentElementText(header)
       if (text) {
         const runtime = extractRuntime(text)
         if (runtime)
@@ -172,7 +181,7 @@ export function extractMovieInfo(document: Document): Record<string, string | st
       if (element.textContent) {
         actors.push({
           name: element.textContent.trim(),
-          role: '女优', // 默认角色
+          role: '女优',
         })
       }
     })
@@ -290,9 +299,9 @@ export function extractMagnets(document: Document): Array<{ name: string, url: s
 }
 
 /**
- * 提取相关影片/剧照信息
+ * 提取相关影片信息
  * @param document DOM文档
- * @returns 相关影片/剧照信息数组
+ * @returns 相关影片信息数组
  */
 export function extractRelatedMovies(document: Document): Array<{ title: string, url: string, imageUrl: string }> {
   const relatedMovies: Array<{ title: string, url: string, imageUrl: string }> = []
@@ -318,4 +327,24 @@ export function extractRelatedMovies(document: Document): Array<{ title: string,
   })
 
   return relatedMovies
+}
+
+/**
+ * 提取剧照信息
+ * @param document DOM文档
+ * @returns 剧照信息数组
+ */
+export function extractExtraFanart(document: Document): string[] {
+  const extraFanart: string[] = []
+  const extraFanartContainer = document.querySelector('#sample-waterfall')
+  if (!extraFanartContainer)
+    return extraFanart
+  const sampleBoxes = extraFanartContainer.querySelectorAll('.sample-box')
+  sampleBoxes.forEach((box) => {
+    const href = box.getAttribute('href')
+    if (href && (href.endsWith('.jpg') || href.endsWith('.png') || href.endsWith('.jpeg') || href.endsWith('.webp'))) {
+      extraFanart.push(getFullImageUrl(href) || '')
+    }
+  })
+  return extraFanart
 }

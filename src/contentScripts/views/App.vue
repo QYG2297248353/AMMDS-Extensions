@@ -66,6 +66,18 @@ const EXPANDED_HEIGHT
 const TOOLTIP_WIDTH = 120 // 提示词宽度
 const SAFE_MARGIN = 20 // 安全边距
 
+// 存储按钮信息
+function savePosition() {
+  localStorage.setItem(
+    'ammdsPosition',
+    JSON.stringify({
+      x: position.value.x,
+      y: position.value.y,
+      show: show.value,
+    }),
+  )
+}
+
 // 展开方向计算 - 根据主按钮位置决定
 const isTop = computed(() => {
   // 如果展开后会超出底部，则向上展开
@@ -77,7 +89,7 @@ const isTop = computed(() => {
 
 // 修改提示词显示方向的计算逻辑
 const isLeft = computed(() => {
-// 默认提示词在左侧，只有当按钮靠近屏幕左侧边缘时才在右侧显示
+  // 默认提示词在左侧，只有当按钮靠近屏幕左侧边缘时才在右侧显示
   return position.value.x < TOOLTIP_WIDTH + SAFE_MARGIN * 2
 })
 
@@ -126,6 +138,8 @@ function adjustPosition() {
       position.value.y = SAFE_MARGIN
     }
   }
+  // 保存新位置
+  savePosition()
 }
 
 // 展开/收起逻辑
@@ -186,6 +200,8 @@ function toggleState() {
           = window.innerWidth - BUTTON_WIDTH - TOOLTIP_WIDTH - SAFE_MARGIN
       }
     }
+    // 保存新位置
+    savePosition()
   }
 
   // 切换展开状态
@@ -199,10 +215,21 @@ function toggleState() {
 
 // 修改初始化位置和窗口大小变化监听
 onMounted(() => {
-  // 初始位置设置为右下角，但确保不会太靠近边缘
-  position.value = {
-    x: window.innerWidth - BUTTON_WIDTH - SAFE_MARGIN,
-    y: window.innerHeight - BUTTON_HEIGHT - SAFE_MARGIN,
+  // 从本地存储中获取上次保存的位置 - 初始化时使用
+  const savedPosition = localStorage.getItem('ammdsPosition')
+  if (savedPosition) {
+    const { x, y, show: savedShow } = JSON.parse(savedPosition)
+    position.value = { x, y }
+    show.value = savedShow
+  }
+  else {
+    // 初始位置设置为右下角，但确保不会太靠近边缘
+    position.value = {
+      x: window.innerWidth - BUTTON_WIDTH - SAFE_MARGIN,
+      y: window.innerHeight - BUTTON_HEIGHT - SAFE_MARGIN,
+    }
+    // 保存初始位置
+    savePosition()
   }
 
   // 监听窗口大小变化
@@ -222,6 +249,8 @@ onMounted(() => {
         Math.min(position.value.y, windowHeight - BUTTON_HEIGHT - SAFE_MARGIN),
       ),
     }
+    // 保存新位置
+    savePosition()
 
     // 如果已展开，还需要考虑展开的空间
     if (show.value) {
@@ -311,10 +340,7 @@ function stopDrag(e: MouseEvent) {
       >
     </button>
     <!-- 按钮组 -->
-    <div
-      v-show="show"
-      class="flex flex-col gap-[10px]"
-    >
+    <div v-show="show" class="flex flex-col gap-[10px]">
       <!-- 自动化 -->
       <button
         class="flex w-14 h-14 rounded-full shadow-lg cursor-pointer border-none ammds-btn ammds-tip"

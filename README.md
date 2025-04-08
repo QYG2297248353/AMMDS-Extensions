@@ -57,7 +57,7 @@ npm dev
 
 ```ts
 // 导入AMMDS的类型
-// import type { AuthorMetadata, MovieMetadata } from "../../index";
+import type { AuthorMetadata, MovieMetadata } from '../../index'
 
 // 导出javbus域名处理器
 export default {
@@ -88,11 +88,11 @@ export default {
    注意：你需要在`src\domain\com\javbus\index.ts`中的`getView`导出该文件。
 
 ```ts
-//   获取视图组件
-//   getView: async () => {
-//     const component = await import('./view/index.vue')
-//     return component.default
-//   },
+// 获取视图组件
+getView: async () => {
+  const component = await import('./view/index.vue')
+  return component.default
+}
 ```
 
 4. 调用消息通知：在不通目录下调用的消息通知是不同的。

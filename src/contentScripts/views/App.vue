@@ -7,34 +7,65 @@ import {
   handleFavorite,
   handleImport,
   handleSubscribe,
+  message,
 } from '~/domain'
 import 'uno.css'
 import { stateExtension } from '~/logic/storage'
 
 const [show, toggle] = useToggle(false)
 
+const [loading, upLoading] = useToggle(false)
+
 // 处理自动化按钮点击
 async function onAutoClick() {
   stateExtension.value.url = window.location.href
-  await handleAutomation(window.location.href)
+  if (loading.value) {
+    message.warning('请耐心等待, 数据导入中...')
+    return
+  }
+  upLoading()
+  await handleAutomation(window.location.href).finally(() => {
+    upLoading()
+  })
 }
 
 // 处理导入按钮点击
 async function onImportClick() {
   stateExtension.value.url = window.location.href
-  await handleImport(window.location.href)
+  if (loading.value) {
+    message.warning('请耐心等待, 数据导入中...')
+    return
+  }
+  upLoading()
+  await handleImport(window.location.href).finally(() => {
+    upLoading()
+  })
 }
 
 // 处理收藏按钮点击
 async function onFavoriteClick() {
   stateExtension.value.url = window.location.href
-  await handleFavorite(window.location.href)
+  if (loading.value) {
+    message.warning('请耐心等待, 数据导入中...')
+    return
+  }
+  upLoading()
+  await handleFavorite(window.location.href).finally(() => {
+    upLoading()
+  })
 }
 
 // 处理订阅按钮点击
 async function onSubscribeClick() {
   stateExtension.value.url = window.location.href
-  await handleSubscribe(window.location.href)
+  if (loading.value) {
+    message.warning('请耐心等待, 数据导入中...')
+    return
+  }
+  upLoading()
+  await handleSubscribe(window.location.href).finally(() => {
+    upLoading()
+  })
 }
 
 // 当前页面是否显示
@@ -351,6 +382,7 @@ function stopDrag(e: MouseEvent) {
         bg="gradient-to-br from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800"
         style="display: flex; justify-content: center; align-items: center"
         aria-label="自动"
+        :disabled="loading"
         @click="onAutoClick"
       >
         <div
@@ -370,6 +402,7 @@ function stopDrag(e: MouseEvent) {
         bg="gradient-to-br from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800"
         style="display: flex; justify-content: center; align-items: center"
         aria-label="导入"
+        :disabled="loading"
         @click="onImportClick"
       >
         <div
@@ -389,6 +422,7 @@ function stopDrag(e: MouseEvent) {
         bg="gradient-to-br from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800"
         style="display: flex; justify-content: center; align-items: center"
         aria-label="收藏"
+        :disabled="loading"
         @click="onFavoriteClick"
       >
         <div
@@ -408,6 +442,7 @@ function stopDrag(e: MouseEvent) {
         bg="gradient-to-br from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800"
         style="display: flex; justify-content: center; align-items: center"
         aria-label="订阅"
+        :disabled="loading"
         @click="onSubscribeClick"
       >
         <div

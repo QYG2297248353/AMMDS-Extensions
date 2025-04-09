@@ -1,5 +1,6 @@
 import { onMessage, sendMessage } from 'webext-bridge/background'
 import type { Tabs } from 'webextension-polyfill'
+import { stateExtension } from '~/logic/storage'
 
 // only on dev mode
 if (import.meta.hot) {
@@ -25,39 +26,72 @@ browser.runtime.onInstalled.addListener((): void => {
   console.log('[AMMDS Extension] installed')
 })
 
-let previousTabId = 0
-
 // communication example: send previous tab title from background page
 // see shim.d.ts for type declaration
-browser.tabs.onActivated.addListener(async ({ tabId }) => {
-  if (!previousTabId) {
-    previousTabId = tabId
-    return
-  }
-
+browser.tabs.onActivated.addListener(async ({ tabId, previousTabId, windowId }) => {
+  stateExtension.value.previousTabId = previousTabId
+  stateExtension.value.windowId = windowId
   let tab: Tabs.Tab
 
   try {
-    tab = await browser.tabs.get(previousTabId)
-    previousTabId = tabId
+    tab = await browser.tabs.get(tabId)
+    stateExtension.value.activateTabId = tab.id || 0
+    stateExtension.value.url = tab.url || ''
   }
   catch {
     return
   }
 
-  sendMessage('tab-prev', { title: tab.title }, { context: 'content-script', tabId })
+  sendMessage('tab-active', { title: tab.title, url: tab.url }, { context: 'content-script', tabId })
 })
 
-onMessage('get-current-tab', async () => {
+interface TabId {
+  tabId: number
+}
+
+/**
+ * 获取指定选项卡
+ * @returns 指定选项卡
+ */
+onMessage('get-tab', async (message) => {
   try {
-    const tab = await browser.tabs.get(previousTabId)
+    const data = message.data as TabId | null
+    if (!data || !data.tabId) {
+      return {
+        title: undefined,
+        url: undefined,
+      }
+    }
+    const tab = await browser.tabs.get(data.tabId)
     return {
       title: tab?.title,
+      url: tab?.url,
     }
   }
   catch {
     return {
       title: undefined,
+      url: undefined,
+    }
+  }
+})
+
+/**
+ * 获取激活的选项卡
+ * @returns 激活的选项卡
+ */
+onMessage('get-active-tab', async () => {
+  try {
+    const tab = await browser.tabs.get(stateExtension.value.activateTabId)
+    return {
+      title: tab?.title,
+      url: tab?.url,
+    }
+  }
+  catch {
+    return {
+      title: undefined,
+      url: undefined,
     }
   }
 })

@@ -6,6 +6,9 @@ import type { Client } from '~/api/fetchApi'
 export const stateExtension = useWebExtensionStorage('ammds-state', {
   enbled: false,
   url: '',
+  activateTabId: 0,
+  previousTabId: 0,
+  windowId: 0,
   isFavorited: false,
   isSubscribed: false,
 } as StateExtension)

@@ -210,9 +210,6 @@ export default {
         throw new Error('Failed to extract data from the page')
       }
 
-      // eslint-disable-next-line no-console
-      console.log('[AMMDS Extension] Data extracted from javbus:', data)
-
       // 返回数据
       return data
     }

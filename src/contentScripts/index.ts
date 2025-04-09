@@ -13,8 +13,8 @@ import { registerAllDomainHandlers } from '~/domain'
   await registerAllDomainHandlers()
 
   // communication example: send previous tab title from background page
-  onMessage('tab-prev', ({ data }) => {
-    console.log(`[AMMDS] Navigate from page "${data.title}"`)
+  onMessage('tab-active', ({ data }) => {
+    console.log(`[AMMDS] Navigate Tab "${data.url || data.title}"`)
   })
 
   // mount component to context window

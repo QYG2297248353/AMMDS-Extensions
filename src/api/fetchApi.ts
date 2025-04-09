@@ -175,10 +175,13 @@ export class RequestHelper {
     // 检查是否初始化
     if (endpoint.startsWith('/') && !this.baseUrl) {
       const client = getDefaultClient()
-      if (client)
+      if (client) {
         this.init(client)
-      else
+      }
+      else {
+        console.error('[AMMDS Extension] 请添加默认客户端')
         throw new Error('[AMMDS Extension] 请添加默认客户端')
+      }
     }
 
     const url = endpoint.startsWith('http') ? endpoint : `${this.baseUrl}${endpoint}`

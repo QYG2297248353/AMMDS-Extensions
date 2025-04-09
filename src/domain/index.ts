@@ -94,8 +94,13 @@ export async function handleFavorite(url: string): Promise<void> {
     const data = await handler.getMovieMetadata()
     stateExtension.value.isFavorited = !stateExtension.value.isFavorited
     data.favorite = true
-    await importMovie(data).then(() => {
-      message.success('导入并收藏成功')
+    await importMovie(data).then((res) => {
+      if (res) {
+        message.success('导入并收藏成功')
+      }
+      else {
+        message.error('收藏失败')
+      }
     }).catch((error) => {
       message.error(error)
     })
@@ -118,8 +123,13 @@ export async function handleSubscribe(url: string): Promise<void> {
     const data = await handler.getMovieMetadata()
     stateExtension.value.isSubscribed = !stateExtension.value.isSubscribed
     data.subscribe = true
-    await importMovie(data).then(() => {
-      message.success('导入并订阅成功')
+    await importMovie(data).then((res) => {
+      if (res) {
+        message.success('导入并订阅成功')
+      }
+      else {
+        message.error('订阅失败')
+      }
     }).catch((error) => {
       message.error(error)
     })
@@ -141,7 +151,12 @@ export async function handleImport(url: string): Promise<void> {
   try {
     const data = await handler.getMovieMetadata()
     await importMovie(data).then((res) => {
-      message.success('导入成功')
+      if (res) {
+        message.success('导入成功')
+      }
+      else {
+        message.error('导入失败')
+      }
     }).catch((error) => {
       message.error(error)
     })

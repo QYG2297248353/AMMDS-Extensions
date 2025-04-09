@@ -1,6 +1,13 @@
 import { RequestHelper } from './fetchApi'
 import type { MovieMetadata } from '~/domain/types'
 
+export interface ImportMovieResponse {
+  code: number
+  data: boolean
+  message: string
+  timestamp: number
+}
+
 /**
  * 导入影视
  *
@@ -9,12 +16,12 @@ import type { MovieMetadata } from '~/domain/types'
  */
 export async function importMovie(movie: MovieMetadata): Promise<boolean> {
   const uri = `/v1/movie/import`
-
-  await RequestHelper.postForm<boolean>(uri, movie).then(() => {
-    return true
+  return RequestHelper.postForm<ImportMovieResponse>(uri, movie).then((res) => {
+    if (res.code >= 200 && res.code < 300)
+      return res.data
+    return false
   }).catch((error) => {
     console.error(error)
     return false
   })
-  return false
 }

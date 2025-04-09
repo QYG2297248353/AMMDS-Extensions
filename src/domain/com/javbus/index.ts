@@ -1,5 +1,5 @@
 /* eslint-disable regexp/no-super-linear-backtracking */
-import { extractDescription, extractExtraFanart, extractKeywords, extractMagnets, extractMovieInfo, extractRelatedMovies, extractTitleInfo } from './utils/javbus-parser'
+import { extractDescription, extractKeywords, extractMagnets, extractMovieInfo, extractRelatedMovies, extractTitleInfo } from './utils/javbus-parser'
 import { message } from '~/domain/message'
 import type { AuthorMetadata, MovieMetadata } from '~/domain/types'
 
@@ -99,7 +99,7 @@ export async function getDataFromPage(): Promise<MovieMetadata | null> {
     }
 
     // 提取电影详细信息
-    const movieInfo = extractMovieInfo(document)
+    const movieInfo = await extractMovieInfo(document)
 
     // 提取关键词作为标签
     const keywords = extractKeywords(document)
@@ -123,12 +123,6 @@ export async function getDataFromPage(): Promise<MovieMetadata | null> {
     const relatedMovies = extractRelatedMovies(document)
     if (relatedMovies.length > 0) {
       movieInfo.relatedMovies = relatedMovies.map(movie => movie.url)
-    }
-
-    // 提取剧照
-    const coverImages = extractExtraFanart(document)
-    if (coverImages.length > 0) {
-      movieInfo.extrafanart = coverImages
     }
 
     // 构建完整的电影元数据
@@ -162,8 +156,6 @@ export default {
         'cdnbus.ink',
         'fanbus.ink',
         'dmmsee.help',
-        '1.ink',
-        'github.com',
       ]
       // 正则表达式匹配列表
       const regexList: RegExp[] = [

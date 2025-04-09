@@ -212,6 +212,47 @@ export class RequestHelper {
     }
   }
 
+  // 将 File 转 base64
+  private static fileToBase64(file: File): Promise<{ name: string, type: string, base64: string }> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onload = () => {
+        const base64 = (reader.result as string).split(',')[1]
+        resolve({ name: file.name, type: file.type, base64 })
+      }
+      reader.onerror = reject
+      reader.readAsDataURL(file)
+    })
+  }
+
+  // 构造 JSON-safe 的 FormData 数据（仅传输用，不是真正的 FormData）
+  private static async serializeFormData(data: any): Promise<Record<string, any>> {
+    const result: Record<string, any> = {}
+
+    for (const key in data) {
+      if (!Object.prototype.hasOwnProperty.call(data, key))
+        continue
+      const value = data[key]
+
+      if (value instanceof File) {
+        const file = await this.fileToBase64(value)
+        result[key] = { __isFile: true, ...file }
+      }
+      else if (Array.isArray(value) && value.length && value[0] instanceof File) {
+        result[key] = await Promise.all(value.map((f: File) => this.fileToBase64(f)))
+        result[key].forEach((item: any) => item.__isFile = true)
+      }
+      else if (typeof value === 'object') {
+        result[key] = JSON.stringify(value)
+      }
+      else {
+        result[key] = value
+      }
+    }
+
+    return result
+  }
+
   // 通过background脚本发送请求
   private static async requestViaBackground<T>(
     url: string,
@@ -229,9 +270,9 @@ export class RequestHelper {
 
       if (data) {
         if (config?.isForm) {
-          // 表单请求 FormData
+          // FormData 请求
           headers = { ...headers, 'Content-Type': 'multipart/form-data' }
-          body = data
+          body = await RequestHelper.serializeFormData(data)
         }
         else {
           // JSON 请求

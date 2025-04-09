@@ -5,6 +5,27 @@
  */
 import { extractRuntime, getFullImageUrl } from './dom-parser'
 
+async function fetchImageFile(url: string) {
+  if (!url)
+    return null
+  try {
+    const response = await fetch(url)
+    if (!response.ok)
+      throw new Error(`HTTP ${response.status}`)
+
+    const blob = await response.blob()
+    const filename = new URL(url).pathname.split('/').pop() || 'image.jpg'
+
+    return new File([blob], filename, {
+      type: blob.type || 'application/octet-stream',
+    })
+  }
+  catch (error) {
+    console.error('[AMMDS Extension] 文件获取失败:', error)
+    return null
+  }
+}
+
 /**
  * 从meta标签中提取关键词
  * @param document DOM文档
@@ -82,13 +103,21 @@ export function extractTitleInfo(document: Document): { uniqueid: string, origin
   return undefined
 }
 
+export interface ResultType {
+  posterUrl?: string[]
+  poster?: File[]
+  extrafanartUrl?: string[]
+  extrafanart?: File[]
+  [key: string]: string | string[] | File[] | object | object[] | undefined
+}
+
 /**
  * 提取电影详细信息
  * @param document DOM文档
  * @returns 电影详细信息对象
  */
-export function extractMovieInfo(document: Document): Record<string, string | string[] | object> {
-  const result: Record<string, string | string[] | object> = {}
+export async function extractMovieInfo(document: Document): Promise<ResultType> {
+  const result: ResultType = {}
 
   // 查找所有header元素
   const headerElements = document.querySelectorAll('span.header')
@@ -194,7 +223,42 @@ export function extractMovieInfo(document: Document): Record<string, string | st
     const href = coverElement.getAttribute('href')
     if (href) {
       result.posterUrl = [getFullImageUrl(href) || '']
+      // 尝试获取封面图文件 File 对象
+      try {
+        await fetchImageFile(getFullImageUrl(href) || '').then((file) => {
+          if (file) {
+            if (!result.poster)
+              result.poster = []
+            result.poster.push(file)
+          }
+        })
+      }
+      catch (error) {
+        console.error('[AMMDS Extension] 封面图文件获取失败:', error)
+      }
     }
+  }
+
+  // 提取剧照
+  const coverImages = extractExtraFanart(document)
+  if (coverImages.length > 0) {
+    result.extrafanartUrl = coverImages
+
+    // 尝试获取剧照图文件 File 对象
+    coverImages.forEach((imageUrl) => {
+      try {
+        fetchImageFile(imageUrl).then((file) => {
+          if (file) {
+            if (!result.extrafanart)
+              result.extrafanart = []
+            result.extrafanart.push(file)
+          }
+        })
+      }
+      catch (error) {
+        console.error('[AMMDS Extension] 剧照图文件获取失败:', error)
+      }
+    })
   }
 
   return result

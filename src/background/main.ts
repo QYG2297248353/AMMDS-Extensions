@@ -69,6 +69,15 @@ interface FetchRequest {
   body?: Record<string, any> | string
 }
 
+function base64ToBlob(base64: string, mime = ''): Blob {
+  const byteChars = atob(base64)
+  const byteNums: number[] = Array.from({ length: byteChars.length })
+  for (let i = 0; i < byteChars.length; i++) {
+    byteNums[i] = byteChars.charCodeAt(i)
+  }
+  return new Blob([new Uint8Array(byteNums)], { type: mime })
+}
+
 onMessage('fetch-api', async (message) => {
   const data = message.data as FetchRequest | null
   if (!data || !data.url) {
@@ -76,39 +85,60 @@ onMessage('fetch-api', async (message) => {
   }
 
   try {
+    const method = (data.method || 'GET').toUpperCase()
+    const headers = { ...(data.headers || {}) }
+    const isForm = headers['Content-Type'] === 'multipart/form-data'
+
     const options: RequestInit = {
-      method: data.method || 'GET',
-      headers: data.headers || {},
+      method,
+      headers,
     }
 
-    // 根据请求方法设置 body
-    if (['POST', 'PUT', 'DELETE'].includes(options.method as string) && data.body) {
-      if (data.headers && data.headers['Content-Type'] === 'application/x-www-form-urlencoded') {
+    if (['POST', 'PUT', 'DELETE'].includes(method) && data.body) {
+      if (headers['Content-Type'] === 'application/x-www-form-urlencoded') {
         options.body = new URLSearchParams(data.body as Record<string, string>).toString()
       }
-      else if (data.headers && data.headers['Content-Type'] === 'multipart/form-data') {
+      else if (isForm) {
         const formData = new FormData()
-        Object.entries(data.body as Record<string, any>).forEach(([key, value]) => {
-          formData.append(key, value)
-        })
+        const body = data.body as Record<string, any>
+
+        for (const [key, value] of Object.entries(body)) {
+          if (Array.isArray(value) && value.length && value[0]?.__isFile) {
+            value.forEach((file) => {
+              const blob = base64ToBlob(file.base64, file.type)
+              const fileObj = new File([blob], file.name, { type: file.type })
+              formData.append(key, fileObj)
+            })
+          }
+          else if (value?.__isFile) {
+            const blob = base64ToBlob(value.base64, value.type)
+            const fileObj = new File([blob], value.name, { type: value.type })
+            formData.append(key, fileObj)
+          }
+          else {
+            formData.append(key, value)
+          }
+        }
+
         options.body = formData
-        delete (options.headers as Record<string, string>)['Content-Type']
+        if (options.headers)
+          delete (options.headers as Record<string, string>)['Content-Type']
       }
       else {
-        options.headers = { ...options.headers, 'Content-Type': 'application/json' }
+        options.headers = {
+          ...options.headers,
+          'Content-Type': 'application/json',
+        }
         options.body = JSON.stringify(data.body)
       }
     }
 
     const response = await fetch(data.url, options)
-    const contentType = response.headers.get('content-type')
-    let responseData
-    if (contentType && contentType.includes('application/json')) {
-      responseData = await response.json()
-    }
-    else {
-      responseData = await response.text()
-    }
+
+    const contentType = response.headers.get('content-type') || ''
+    const responseData = contentType.includes('application/json')
+      ? await response.json()
+      : await response.text()
 
     return { success: true, data: responseData }
   }

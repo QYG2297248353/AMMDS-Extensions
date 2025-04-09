@@ -1,6 +1,7 @@
 /* eslint-disable unused-imports/no-unused-vars */
 import { message } from './message'
 import type { AuthorMetadata, MovieMetadata } from './types'
+import { getDefaultClient } from '~/api/fetchApi'
 import { importMovie } from '~/api/ammds'
 import { stateExtension } from '~/logic/storage'
 
@@ -86,6 +87,11 @@ export function isEnabled(): boolean {
 
 // 处理收藏操作
 export async function handleFavorite(url: string): Promise<void> {
+  const client = getDefaultClient()
+  if (!client) {
+    message.warning('请添加客户端')
+    return
+  }
   const handler = await findMatchingHandler(url)
   if (!handler) {
     message.warning('数据解析失败')
@@ -115,6 +121,11 @@ export async function handleFavorite(url: string): Promise<void> {
 
 // 处理订阅操作
 export async function handleSubscribe(url: string): Promise<void> {
+  const client = getDefaultClient()
+  if (!client) {
+    message.warning('请添加客户端')
+    return
+  }
   const handler = await findMatchingHandler(url)
   if (!handler) {
     message.warning('数据解析失败')
@@ -144,6 +155,11 @@ export async function handleSubscribe(url: string): Promise<void> {
 
 // 处理导入操作
 export async function handleImport(url: string): Promise<void> {
+  const client = getDefaultClient()
+  if (!client) {
+    message.warning('请添加客户端')
+    return
+  }
   const handler = await findMatchingHandler(url)
   if (!handler) {
     message.warning('数据解析失败')
@@ -171,6 +187,11 @@ export async function handleImport(url: string): Promise<void> {
 
 // 处理自动化操作
 export async function handleAutomation(url: string): Promise<void> {
+  const client = getDefaultClient()
+  if (!client) {
+    message.warning('请添加客户端')
+    return
+  }
   const handler = await findMatchingHandler(url)
   if (!handler) {
     message.warning('数据解析失败')

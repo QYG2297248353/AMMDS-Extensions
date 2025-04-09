@@ -14,7 +14,7 @@ export async function healthCheck(url: string): Promise<boolean> {
   if (url.endsWith('/')) {
     return Promise.resolve(false)
   }
-  const uri = `${url}/v1/health/check`
+  const uri = `${url}/api/v1/health/check`
   const response = await RequestHelper.get<boolean>(uri)
   return response
 }

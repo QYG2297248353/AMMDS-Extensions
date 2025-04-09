@@ -15,7 +15,7 @@ export interface ImportMovieResponse {
  * @returns Promise<boolean>
  */
 export async function importMovie(movie: MovieMetadata): Promise<boolean> {
-  const uri = `/v1/movie/import`
+  const uri = `/api/v1/movie/import`
   return RequestHelper.postForm<ImportMovieResponse>(uri, movie).then((res) => {
     if (res.code >= 200 && res.code < 300)
       return res.data

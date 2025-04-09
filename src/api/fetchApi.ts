@@ -229,8 +229,8 @@ export class RequestHelper {
 
       if (data) {
         if (config?.isForm) {
-          // 表单请求
-          headers = { ...headers, 'Content-Type': 'application/x-www-form-urlencoded' }
+          // 表单请求 FormData
+          headers = { ...headers, 'Content-Type': 'multipart/form-data' }
           body = data
         }
         else {

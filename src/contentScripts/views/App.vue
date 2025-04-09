@@ -289,6 +289,9 @@ function onDrag(e: MouseEvent) {
         ),
       }
 
+      // 实时保存位置信息
+      savePosition()
+
       // 拖动时也要考虑展开状态
       if (show.value) {
         adjustPosition()
@@ -441,7 +444,7 @@ function stopDrag(e: MouseEvent) {
   background-size: 100px 100px;
 
   &:hover {
-    transform: scale(1.05) translateY(-2px);
+    transform: translateY(-2px);
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2),
       0 10px 10px -5px rgba(0, 0, 0, 0.1),
       inset 0 0 0 1px rgba(255, 255, 255, 0.2);
@@ -449,7 +452,7 @@ function stopDrag(e: MouseEvent) {
   }
 
   &:active {
-    transform: scale(0.98);
+    transform: translateY(0);
     box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1),
       inset 0 1px 2px rgba(0, 0, 0, 0.1);
   }
@@ -568,8 +571,7 @@ function stopDrag(e: MouseEvent) {
 
   &:active {
     transform: scale(0.98);
-    box-shadow: 0 5px 15px -3px rgba(0, 0, 0, 0.15),
-      0 4px 6px -2px rgba(0, 0, 0, 0.05),
+    box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1),
       inset 0 1px 2px rgba(0, 0, 0, 0.1);
   }
 }

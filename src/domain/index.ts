@@ -140,11 +140,7 @@ export async function handleImport(url: string): Promise<void> {
 
   try {
     const data = await handler.getMovieMetadata()
-    // eslint-disable-next-line no-console
-    console.log('请求数据', data)
     await importMovie(data).then((res) => {
-      // eslint-disable-next-line no-console
-      console.log('导入数据', res)
       message.success('导入成功')
     }).catch((error) => {
       message.error(error)

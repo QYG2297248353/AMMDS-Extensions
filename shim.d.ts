@@ -6,7 +6,9 @@ declare module 'webext-bridge' {
     // see https://github.com/antfu/webext-bridge#type-safe-protocols
     'tab-active': { title: string | undefined, url: string | undefined }
     'get-tab': ProtocolWithReturn<{ tabId: number }, { title: string | undefined, url: string | undefined }>
+    'get-current-tab': ProtocolWithReturn<{ tabId?: number }, { title: string | undefined, url: string | undefined }>
     'get-active-tab': ProtocolWithReturn<{ tabId?: number }, { title: string | undefined, url: string | undefined }>
+    'updateCurrentTabUrl': ProtocolWithReturn
     'fetch-api': ProtocolWithReturn<{
       url: string
       method?: 'GET' | 'POST' | 'PUT' | 'DELETE'

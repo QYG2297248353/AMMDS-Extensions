@@ -74,7 +74,6 @@ export interface StateExtension {
   enbled: boolean
   url: string
   activateTabId: number
-  previousTabId?: number
   windowId?: number
   isFavorited: boolean
   isSubscribed: boolean

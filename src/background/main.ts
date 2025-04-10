@@ -26,23 +26,67 @@ browser.runtime.onInstalled.addListener((): void => {
   console.log('[AMMDS Extension] installed')
 })
 
-// communication example: send previous tab title from background page
-// see shim.d.ts for type declaration
-browser.tabs.onActivated.addListener(async ({ tabId, previousTabId, windowId }) => {
-  stateExtension.value.previousTabId = previousTabId
+// 数据更新
+function handleTabUpdate(tab: Tabs.Tab) {
+  if (!tab || !tab.url)
+    return
+
+  stateExtension.value.activateTabId = tab.id || 0
+  stateExtension.value.url = tab.url || ''
+  stateExtension.value.windowId = tab.windowId || 0
+  sendMessage('tab-active', { title: tab.title, url: tab.url }, { context: 'content-script', tabId: tab.id! })
+}
+
+/**
+ * 监听选项卡激活事件
+ *
+ * 切换选项卡时触发
+ *
+ * @param tabId 选项卡 ID
+ * @param windowId 窗口 ID
+ */
+browser.tabs.onActivated.addListener(async ({ tabId, windowId }) => {
   stateExtension.value.windowId = windowId
   let tab: Tabs.Tab
 
   try {
     tab = await browser.tabs.get(tabId)
-    stateExtension.value.activateTabId = tab.id || 0
-    stateExtension.value.url = tab.url || ''
+    handleTabUpdate(tab)
   }
   catch {
-    return
   }
+})
 
-  sendMessage('tab-active', { title: tab.title, url: tab.url }, { context: 'content-script', tabId })
+/**
+ * 监听激活选项卡更新事件
+ *
+ * 地址栏变动、加载新页面时触发
+ *
+ * @param tabId 选项卡 ID
+ * @param changeInfo 选项卡更新信息
+ * @param tab 选项卡对象
+ */
+browser.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
+  if (tabId === stateExtension.value.activateTabId && changeInfo.url) {
+    handleTabUpdate(tab)
+  }
+})
+
+/**
+ * 窗口焦点变化事件
+ *
+ * 切换窗口时触发
+ *
+ * @param windowId 窗口 ID
+ */
+browser.windows.onFocusChanged.addListener(async (windowId) => {
+  if (windowId === stateExtension.value.windowId)
+    return
+
+  const tabs = await browser.tabs.query({ active: true, windowId })
+  if (tabs.length === 0)
+    return
+  handleTabUpdate(tabs[0])
 })
 
 interface TabId {
@@ -77,6 +121,26 @@ onMessage('get-tab', async (message) => {
 })
 
 /**
+ * 获取当前选项卡
+ * @returns 指定选项卡
+ */
+onMessage('get-current-tab', async () => {
+  try {
+    const tab = await browser.tabs.getCurrent()
+    return {
+      title: tab?.title,
+      url: tab?.url,
+    }
+  }
+  catch {
+    return {
+      title: undefined,
+      url: undefined,
+    }
+  }
+})
+
+/**
  * 获取激活的选项卡
  * @returns 激活的选项卡
  */
@@ -94,6 +158,27 @@ onMessage('get-active-tab', async () => {
       url: undefined,
     }
   }
+})
+
+/**
+ * 更新当前选项卡的 URL
+ */
+onMessage('update-current-tab', async () => {
+  let tab: Tabs.Tab
+
+  try {
+    tab = await browser.tabs.get(stateExtension.value.activateTabId)
+    if (!tab)
+      return
+    // 存储当前激活的选项卡
+    stateExtension.value.activateTabId = tab.id || 0
+    stateExtension.value.url = tab.url || ''
+  }
+  catch {
+    return
+  }
+
+  sendMessage('tab-active', { title: tab.title, url: tab.url }, { context: 'content-script', tabId: tab.id || 0 })
 })
 
 interface FetchRequest {

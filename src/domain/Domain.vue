@@ -22,6 +22,10 @@ function getAvatarUrl(authorInfo: AuthorMetadata) {
   return 'https://github.com/identicons/guest.png'
 }
 
+function reCheck() {
+  window.location.reload()
+}
+
 onMounted(async () => {
   const url = stateExtension.value.url
   if (!url) {
@@ -42,7 +46,11 @@ onMounted(async () => {
     <section v-if="authorInfo" class="author-section">
       <!-- 基础信息 -->
       <div class="author-info">
-        <img :src="getAvatarUrl(authorInfo)" class="author-avatar" :alt="authorInfo.name">
+        <img
+          :src="getAvatarUrl(authorInfo)"
+          class="author-avatar"
+          :alt="authorInfo.name"
+        >
         <div class="author-info-right">
           <h2 class="author-name">
             {{ authorInfo.name }}
@@ -54,19 +62,44 @@ onMounted(async () => {
       </div>
       <!-- 快捷链接 -->
       <div class="author-links">
-        <a v-if="authorInfo.github" :href="authorInfo.github" target="_blank" class="author-link">
+        <a
+          v-if="authorInfo.github"
+          :href="authorInfo.github"
+          target="_blank"
+          class="author-link"
+        >
           <line-md:github-loop />
         </a>
-        <a v-if="authorInfo.website" :href="authorInfo.website" target="_blank" class="author-link">
+        <a
+          v-if="authorInfo.website"
+          :href="authorInfo.website"
+          target="_blank"
+          class="author-link"
+        >
           <gg:website />
         </a>
-        <a v-if="authorInfo.email" :href="`mailto:${authorInfo.email}`" target="_blank" class="author-link">
+        <a
+          v-if="authorInfo.email"
+          :href="`mailto:${authorInfo.email}`"
+          target="_blank"
+          class="author-link"
+        >
           <line-md:email-twotone />
         </a>
-        <a v-if="authorInfo.telegram" :href="authorInfo.telegram" target="_blank" class="author-link">
+        <a
+          v-if="authorInfo.telegram"
+          :href="authorInfo.telegram"
+          target="_blank"
+          class="author-link"
+        >
           <line-md:telegram />
         </a>
-        <a v-if="authorInfo.twitter" :href="authorInfo.twitter" target="_blank" class="author-link">
+        <a
+          v-if="authorInfo.twitter"
+          :href="authorInfo.twitter"
+          target="_blank"
+          class="author-link"
+        >
           <line-md:twitter-x />
         </a>
       </div>
@@ -77,6 +110,9 @@ onMounted(async () => {
       <component :is="DynamicComponent" v-if="DynamicComponent" />
       <div v-else class="no-content">
         <p>未找到匹配的页面组件</p>
+        <p class="re-check" @click="reCheck">
+          重新检查
+        </p>
       </div>
     </section>
   </main>
@@ -170,5 +206,12 @@ onMounted(async () => {
   align-items: center;
   height: 100%;
   color: #6c757d;
+  flex-direction: column;
+  gap: 10px;
+
+  .re-check {
+    cursor: pointer;
+    color: #007bff;
+  }
 }
 </style>
